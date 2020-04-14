@@ -1,0 +1,11 @@
+
+*.v2
+kika/.vs/kika/v16/.suo
+*.testlog
+*.manifest
+*.dll
+*.pdb
+*.json
+*.tmp
+*.cache
+*.props
