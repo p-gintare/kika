@@ -1,3 +1,4 @@
+using kika.NUnit.Pages;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -9,35 +10,14 @@ namespace kika
     public class LoginTestStep3
     {
         private ChromeDriver _driver;
+        private KikaHomePage kikaHomePage;
 
         private By popupCloseButonSelector = By.CssSelector("#editable_popup[style*='display: block;'] .close");
         private IWebElement popupModalCloseElement => _driver.FindElement(popupCloseButonSelector);
 
-        private const string LoginId = "login_form";
-        private IWebElement loginElement => _driver.FindElement(By.CssSelector(".need2login"));
-        IWebElement emailElement => _driver.FindElementByCssSelector($"#{LoginId} [name='email']");
-        IWebElement passwordElement => _driver.FindElementByCssSelector($"#{LoginId} [name='password']");
-        IWebElement loginButton => _driver.FindElementByCssSelector($"#{LoginId} .btn-primary");
-
-        IWebElement menuElement => _driver.FindElementByCssSelector("#profile_menu.dropdown");
-
-        private const string FirstItemElementSelector = ".owl-item.active";
-        IWebElement firstItemPriceElement => _driver.FindElement(By.CssSelector(FirstItemElementSelector)).FindElement(By.CssSelector(".price"));
-        IWebElement firstItemNameElement => _driver.FindElement(By.CssSelector($"{FirstItemElementSelector} .name"));
-        IWebElement buyButton => _driver.FindElement(By.CssSelector($"{FirstItemElementSelector} .btn-primary"));
-
-        IWebElement cartElement => _driver.FindElement(By.Id("cart_info"));
         IWebElement cartItemPriceElement => _driver.FindElement(By.CssSelector("#cart_items .price"));
         IWebElement productNameElement => _driver.FindElement(By.CssSelector(".product_name"));
         IList<IWebElement> cartItemElementList => _driver.FindElements(By.CssSelector("#cart_items .item"));
-        IWebElement bubleCountElement => _driver.FindElement(By.CssSelector("#cart_info .cnt"));
-        IWebElement example
-        {
-            get
-            {
-                return _driver.FindElement(By.CssSelector("#editable_popup[style*='display: block;'] .close"));
-            }
-        }
 
         [SetUp]
         public void beforeTest()
@@ -47,7 +27,9 @@ namespace kika
             _driver = new ChromeDriver(options);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
 
-            _driver.Url = "https://www.kika.lt/";
+            //_driver.Url = "https://www.kika.lt/";
+            kikaHomePage = new KikaHomePage(_driver);
+            kikaHomePage.GoTo();
         }
 
         [Test]
@@ -55,15 +37,14 @@ namespace kika
         {
             popupModalCloseElement.Click();
 
-            loginElement.Click();
+            kikaHomePage
+                .ClickOnLogin()
+                    .EnterEmail("test@test.lt")
+                    .EnterPassword("test123")
+                    .ClickLogin()
+                .AssertMenuExists();
 
-            emailElement.SendKeys("test@test.lt");
-            passwordElement.SendKeys("test123");
-            loginButton.Click();
-
-            popupModalCloseElement.Click();
-            
-            Assert.IsNotNull(menuElement, "User is not logged in");
+          //  popupModalCloseElement.Click();
         }
 
         [Test]
@@ -71,26 +52,28 @@ namespace kika
         {
             popupModalCloseElement.Click();
 
-            loginElement.Click();
-
-            emailElement.SendKeys("test@test.lt");
-            passwordElement.SendKeys("test123");
-            loginButton.Click();
+            kikaHomePage
+                .ClickOnLogin()
+                .Login("test@test.lt", "test123").AssertMenuExists();
 
             popupModalCloseElement.Click();
 
-            Assert.IsNotNull(menuElement, "User is not logged in");
+            kikaHomePage.AssertCartBubleNumberIs("0");
 
-            var price = firstItemPriceElement.Text;
-            var name = firstItemNameElement.Text.Trim();
-            buyButton.Click();
+            var price = kikaHomePage.GetFirstItemPrice();
+            var name = kikaHomePage.GetFirstItemName();
 
-            cartElement.Click();
+            kikaHomePage
+                .ClickFirstItemBuy()
+                .ClickOnCart();
+
+            kikaHomePage.Assert.AssertCartBubleNumberIs(1);
 
             Assert.IsTrue(cartItemPriceElement.Text.Contains(price), "Prices are not the same");
             Assert.AreEqual(name, productNameElement.Text);
             Assert.AreEqual(1, cartItemElementList.Count);
-            Assert.AreEqual("1", bubleCountElement.Text);
+            
+            
         }
 
         [TearDown]
