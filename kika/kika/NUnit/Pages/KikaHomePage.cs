@@ -1,46 +1,39 @@
-﻿using NUnit.Framework;
+﻿using kika.NUnit.Utils;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 
 namespace kika.NUnit.Pages
 {
-    public class KikaHomePage
+    public class KikaHomePage : BasePage
     {
-        private ChromeDriver _driver;
-        public KikaHomePage(ChromeDriver driver)
-        {
-            _driver = driver;
-        }
-        IWebElement loginElement => _driver.FindElement(By.CssSelector(".need2login"));
-        IWebElement menuElement => _driver.FindElementByCssSelector("#profile_menu.dropdown");
-
+        public KikaHomePage(IWebDriver driver) : base(driver) { }
+        
         private const string FirstItemElementSelector = ".owl-item.active";
-        IWebElement firstItemPriceElement => _driver.FindElement(By.CssSelector(FirstItemElementSelector)).FindElement(By.CssSelector(".price"));
-        IWebElement firstItemNameElement => _driver.FindElement(By.CssSelector($"{FirstItemElementSelector} .name"));
-        IWebElement buyButton => _driver.FindElement(By.CssSelector($"{FirstItemElementSelector} .btn-primary"));
+        IWebElement firstItemPriceElement => driver.FindElement(By.CssSelector(FirstItemElementSelector)).FindElement(By.CssSelector(".price"));
+        IWebElement firstItemNameElement => driver.FindElement(By.CssSelector($"{FirstItemElementSelector} .name"));
+        IWebElement buyButton => driver.FindElement(By.CssSelector($"{FirstItemElementSelector} .btn-primary"));
 
-        IWebElement cartElement => _driver.FindElement(By.Id("cart_info"));
+        public KikaHeaderSection Header => new KikaHeaderSection(driver);
 
-        IWebElement bubleCountElement => _driver.FindElement(By.CssSelector("#cart_info .cnt"));
-
-        public AssertKikaHomePage Assert => new AssertKikaHomePage(_driver, bubleCountElement);
+       // public AssertKikaHomePage Assert => new AssertKikaHomePage(_driver, bubleCountElement);
 
         public KikaHomePage GoTo()
         {
-            _driver.Url = "https://www.kika.lt/";
+            driver.Url = "https://www.kika.lt/";
             return this;
         }
 
-        public KikaHomePage AssertMenuExists()
+        public KikaHomePage Login(User user)
         {
-            Assert.IsNotNull(menuElement, "User is not logged in");
+            Header
+                .ClickOnLogin()
+                .Login(user.Username, user.Password);
             return this;
         }
 
         public LoginModal ClickOnLogin()
         {
-            loginElement.Click();
-            return new LoginModal(_driver);
+            Header.ClickOnLogin();
+            return new LoginModal(driver);
         }
 
         public string GetFirstItemPrice()
@@ -59,29 +52,10 @@ namespace kika.NUnit.Pages
             return this;
         }
 
-        public KikaHomePage ClickOnCart()
+        public CartPage ClickOnCart()
         {
-            cartElement.Click();
-            return this;
+            Header.ClickOnCart();
+            return new CartPage(driver);
         }
-
-        public KikaHomePage Click_on_cart()
-        {
-            cartElement.Click();
-            return this;
-        }
-
-        public KikaHomePage AssertCartBubleNumberIs(int count)
-        {
-            Assert.AreEqual(count.ToString(), bubleCountElement.Text);
-            return this;
-        }
-
-        public KikaHomePage AssertCartBubleNumberIs(string count)
-        {
-            Assert.AreEqual(count, bubleCountElement.Text);
-            return this;
-        }
-
     }
 }

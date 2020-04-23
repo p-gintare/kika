@@ -5,14 +5,12 @@ using OpenQA.Selenium.Chrome;
 
 namespace kika.NUnit.Pages
 {
-    public class AssertKikaHomePage
+    public class AssertKikaHomePage : BasePage
     {
-        private ChromeDriver driver;
         private IWebElement bubleCountElement;
 
-        public AssertKikaHomePage(ChromeDriver driver, IWebElement bubble)
+        public AssertKikaHomePage(ChromeDriver driver, IWebElement bubble) : base(driver)
         {
-            this.driver = driver;
             bubleCountElement = bubble;
         }
 

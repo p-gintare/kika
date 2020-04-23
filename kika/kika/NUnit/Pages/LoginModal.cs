@@ -3,24 +3,21 @@ using OpenQA.Selenium.Chrome;
 
 namespace kika.NUnit.Pages
 {
-    public class LoginModal
+    public class LoginModal : BasePage
     {
-        private ChromeDriver driver;
+        public LoginModal(IWebDriver driver) : base(driver) { }
 
-        public LoginModal(ChromeDriver driver)
-        {
-            this.driver = driver;
-        }
-
-        IWebElement emailElement => driver.FindElementByCssSelector($"#login_form [name='email']");
-        IWebElement passwordElement => driver.FindElementByCssSelector($"#login_form [name='password']");
-        IWebElement loginButton => driver.FindElementByCssSelector($"#login_form .btn-primary");
+        IWebElement emailElement => driver.FindElement(By.CssSelector($"#login_form [name='email']"));
+        IWebElement passwordElement => driver.FindElement(By.CssSelector($"#login_form [name='password']"));
+        IWebElement loginButton => driver.FindElement(By.CssSelector($"#login_form .btn-primary"));
 
         public KikaHomePage Login(string email, string password)
         {
             EnterEmail(email);
             EnterPassword(password);
-            return ClickLogin();
+            var homePage = ClickLogin();
+            homePage.Header.AssertMenuExists();
+            return homePage;
         }
 
         public LoginModal EnterEmail(string email)
@@ -38,7 +35,7 @@ namespace kika.NUnit.Pages
         public KikaHomePage ClickLogin()
         {
             loginButton.Click();
-            return new KikaHomePage(driver);
+            return new KikaHomePage(driver as ChromeDriver);
         }
     }
 }

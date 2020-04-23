@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace kika
 {
-    public class LoginTestBasic
+    public class LoginTestBasic : BaseTest
     {
         [Test]
         public void TestLogin()
