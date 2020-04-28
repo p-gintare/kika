@@ -8,14 +8,28 @@ namespace kika.NUnit.Utils
 {
     public class Driver
     {
-        public static IWebDriver Init()
+        private static IWebDriver driver;
+        public static IWebDriver Current => driver;
+
+        public static void Init()
         {
             var options = new ChromeOptions();
             options.AddArguments("incognito", "start-maximized");
-            var driver = new ChromeDriver(options);
+            driver = new ChromeDriver(options);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
-            return driver;
         }
+
+        public static void Quit()
+        {
+            Current.Quit();
+        }
+
+
+
+
+
+
+
 
 
 
@@ -43,19 +57,6 @@ namespace kika.NUnit.Utils
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
             return driver;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         public static void WriteAllCookies(IWebDriver driver)
         {

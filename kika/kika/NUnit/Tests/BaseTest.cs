@@ -11,29 +11,32 @@ namespace kika.NUnit.Tests
 {
     public abstract class BaseTest
     {
-        protected IWebDriver driver;
         protected KikaHomePage kikaHomePage;
         protected WeWorkModal weWorkModal;
+        protected ProductListingPage productPage;
+        protected CartPage cartPage;
 
         [SetUp]
         public void BeforeTest()
         {
-            driver = Driver.Init();
+            Driver.Init();
             InitPages();
             kikaHomePage.GoTo();
         }
 
         private void InitPages()
         {
-            kikaHomePage = new KikaHomePage(driver);
-            weWorkModal = new WeWorkModal(driver);
+            kikaHomePage = new KikaHomePage();
+            weWorkModal = new WeWorkModal();
+            productPage = new ProductListingPage();
+            cartPage = new CartPage();
         }
 
         [TearDown]
         public void QuitDriver()
         {
             MakeScreenshotOnTestFailure();
-            driver.Quit();
+            Driver.Quit();
         }
 
         protected void MakeScreenshotOnTestFailure()
@@ -66,7 +69,7 @@ namespace kika.NUnit.Tests
 
         protected void DoScreenshot()
         {
-            Screenshot screenshot = driver.TakeScreenshot();
+            Screenshot screenshot = Driver.Current.TakeScreenshot();
             string screenshotPath = $"{TestContext.CurrentContext.WorkDirectory}/Screenshots";
             Directory.CreateDirectory(screenshotPath);
             string screenshotFile = Path.Combine(screenshotPath, $"{TestContext.CurrentContext.Test.Name}_{DateTime.Now.ToString("yy-MM-dd HH:mm:ss")}.png");

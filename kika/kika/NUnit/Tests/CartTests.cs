@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using kika.NUnit.Pages;
+using kika.NUnit.Utils;
+using NUnit.Framework;
 using System;
 
 namespace kika.NUnit.Tests
@@ -14,8 +16,6 @@ namespace kika.NUnit.Tests
             kikaHomePage
                 .ClickOnLogin()
                 .Login("test@test.lt", "test123");
-
-            weWorkModal.Close();
         }
 
         [Test]
@@ -32,6 +32,28 @@ namespace kika.NUnit.Tests
                 .AssertProductIsInCart(name, price, 1);
 
             kikaHomePage.Header.AssertCartBubbleNumberIs(1);
+        }
+
+        [Test]
+        public void TestRemoveItemFromCart()
+        {
+            kikaHomePage.Header.AssertCartBubbleNumberIs("0");
+            kikaHomePage.Menu.NavigateToDogToys();
+            //Navigation.GoToDogToysPage();
+            
+            var name = productPage.GetProductTitle();
+            var price = productPage.GetProductPrice();
+
+            productPage.AddProductToCart();
+            kikaHomePage.Header.AssertCartBubbleNumberIs(1);
+
+            kikaHomePage
+                .ClickOnCart()
+                .AssertProductIsInCart(name, price, 1);
+
+            cartPage
+                .RemoveProduct()
+                .AssertCarIsEmpty();
         }
     }
 }

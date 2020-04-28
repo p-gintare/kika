@@ -1,14 +1,15 @@
-﻿using NUnit.Framework;
+﻿using kika.NUnit.Utils;
+using NUnit.Framework;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using System;
 using System.Collections.Generic;
 
 namespace kika.NUnit.Pages
 {
-    public class KikaHeaderSection : BasePage
+    public class KikaHeaderSection
     {
-        public KikaHeaderSection(IWebDriver driver) : base(driver)
-        {
-        }
+        private IWebDriver driver => Driver.Current;
         IWebElement menuElement {
             get {
                 try
@@ -38,17 +39,28 @@ namespace kika.NUnit.Pages
         public SearchPage ClickOnSearch()
         {
             searchElement.Click();
-            return new SearchPage(driver);
+            return new SearchPage();
         }
 
         public LoginModal ClickOnLogin()
         {
             loginElement.Click();
-            return new LoginModal(driver);
+            return new LoginModal();
         }
 
         public void AssertCartBubbleNumberIs(int count)
         {
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(0);
+            try {
+                var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                wait.Until(d =>
+                {
+                    return bubbleCountElement.Text == count.ToString();
+                });
+            }
+            catch(WebDriverException) {}
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
+
             Assert.AreEqual(count.ToString(), bubbleCountElement.Text);
         }
 

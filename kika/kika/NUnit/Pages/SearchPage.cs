@@ -7,10 +7,6 @@ namespace kika.NUnit.Pages
 {
     public class SearchPage : BasePage
     {
-        public SearchPage(IWebDriver driver) : base(driver)
-        {
-        }
-
         IWebElement searchInputElement => driver.FindElement(By.CssSelector("#quick_search.active [name='search']"));
         IWebElement searchButton => driver.FindElement(By.CssSelector("#quick_search [type='submit']"));
 

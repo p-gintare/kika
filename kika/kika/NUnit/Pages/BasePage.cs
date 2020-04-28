@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using kika.NUnit.Utils;
+using OpenQA.Selenium;
 
 namespace kika.NUnit.Pages
 {
@@ -6,9 +7,10 @@ namespace kika.NUnit.Pages
     {
         protected IWebDriver driver;
 
-        protected BasePage(IWebDriver driver)
+        public KikaHeaderSection Header => new KikaHeaderSection();
+        protected BasePage()
         {
-            this.driver = driver;
+            driver = Driver.Current;
         }
     }
 }

@@ -1,12 +1,11 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
+using kika.NUnit.Utils;
 
 namespace kika.NUnit.Pages
 {
-    public class LoginModal : BasePage
+    public class LoginModal
     {
-        public LoginModal(IWebDriver driver) : base(driver) { }
-
+        private IWebDriver driver => Driver.Current;
         IWebElement emailElement => driver.FindElement(By.CssSelector($"#login_form [name='email']"));
         IWebElement passwordElement => driver.FindElement(By.CssSelector($"#login_form [name='password']"));
         IWebElement loginButton => driver.FindElement(By.CssSelector($"#login_form .btn-primary"));
@@ -35,7 +34,7 @@ namespace kika.NUnit.Pages
         public KikaHomePage ClickLogin()
         {
             loginButton.Click();
-            return new KikaHomePage(driver as ChromeDriver);
+            return new KikaHomePage();
         }
     }
 }
